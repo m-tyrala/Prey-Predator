@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class FieldOfView : MonoBehaviour {
@@ -55,13 +56,27 @@ public class FieldOfView : MonoBehaviour {
 	}
 
 	void DrawFieldOfView() {
-		int stepCount = Mathf.RoundToInt(ViewAngle * MeshResolution);
-		float stepAngleSize = ViewAngle / stepCount;
+		SenseField viewField = CalculatSenseField(ViewAngle, ViewRadius);
+		SenseField hearField = CalculatSenseField(460.0f, HearRadius);
+
+		Vector3[] vertices = viewField.Vertices.Concat(hearField.Vertices).ToArray();
+		int[] triangles = viewField.Triangles.Concat(hearField.Triangles).ToArray();
+		
+		viewMesh.Clear();
+		viewMesh.vertices = vertices;
+		viewMesh.triangles = triangles;
+		viewMesh.RecalculateNormals();
+	}
+
+
+	private SenseField CalculatSenseField(float senseAngle, float senseRadius) {
+		int stepCount = Mathf.RoundToInt(senseAngle * MeshResolution);
+		float stepAngleSize = senseAngle / stepCount;
 		List<Vector3> viewPoints = new List<Vector3>();
 
 		for (int i = 0; i <= stepCount; i++) {
-			float angle = - ViewAngle / 2 + stepAngleSize * i;
-			Vector3 viewCastRay = transform.position + GetDirectionVector(angle) * ViewRadius;
+			float angle = - senseAngle / 2 + stepAngleSize * i;
+			Vector3 viewCastRay = transform.position + GetDirectionVector(angle) * senseRadius;
 			
 			viewPoints.Add(viewCastRay);
 		}
@@ -80,11 +95,19 @@ public class FieldOfView : MonoBehaviour {
 				triangles[i * 3 + 2] = i + 2;
 			}
 		}
-		viewMesh.Clear();
-		viewMesh.vertices = vertices;
-		viewMesh.triangles = triangles;
-		viewMesh.RecalculateNormals();
+		return new SenseField(vertices, triangles);
 	}
+
+	public struct SenseField {
+		public Vector3[] Vertices;
+		public int[] Triangles;
+
+		public SenseField(Vector3[] vertices, int[] triangles) {
+			Vertices = vertices;
+			Triangles = triangles;
+		}
+	}
+	
 	
 	public Vector3 GetDirectionVector(float angleDegrees) {
 		
