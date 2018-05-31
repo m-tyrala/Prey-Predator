@@ -101,15 +101,12 @@ public class Predator : MonoBehaviour {
 			_currentSpeed -= _acceleration * Time.deltaTime / ( TimeToMaxSpeed / 2 );
 			_currentSpeed = (_currentSpeed < 0) ? 0 : _currentSpeed;
 		}
-		
-		print("Current position = [ " + transform.position[0] + " , " + transform.position[1] + " ]");
 		position = transform.position + transform.rotation * move * _currentSpeed * Time.deltaTime;;
 		position[0] = (position[0] < 10) ? 10 : position[0];
 		position[0] = (position[0] > 5090) ? 5090 : position[0];
 		position[1] = (position[1] > 890) ? 890 : position[1];
 		position[1] = (position[1] < -4190) ? -4190 : position[1];
 		transform.position = position;
-		print("Current position = [ " + transform.position[0] + " , " + transform.position[1] + " ]");
 	}
 
 	void Howl() {
