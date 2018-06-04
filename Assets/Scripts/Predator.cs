@@ -103,9 +103,9 @@ public class Predator : MonoBehaviour {
 		}
 		position = transform.position + transform.rotation * move * _currentSpeed * Time.deltaTime;;
 		position[0] = (position[0] < 10) ? 10 : position[0];
-		position[0] = (position[0] > 5090) ? 5090 : position[0];
+		position[0] = (position[0] > 5320) ? 5320 : position[0];
 		position[1] = (position[1] > 890) ? 890 : position[1];
-		position[1] = (position[1] < -4190) ? -4190 : position[1];
+		position[1] = (position[1] < -4450) ? -4450 : position[1];
 		transform.position = position;
 	}
 

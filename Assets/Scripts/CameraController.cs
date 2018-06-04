@@ -22,10 +22,10 @@ public class CameraController : MonoBehaviour {
 		Vector3 playerPosition = Player.transform.position;
 		
 		float x = (playerPosition[0] < 450) ? 450 : playerPosition[0];
-		x = (x > 4640) ? 4640 : x;
+		x = (x > 4900) ? 4900 : x;
 		
 		float y = (playerPosition[1] > 450) ? 450 : playerPosition[1];
-		y = (y < -3740) ? -3740 : y;
+		y = (y < -4040) ? -4040 : y;
 
 		return new Vector2(x, y);
 	}
