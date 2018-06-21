@@ -16,20 +16,20 @@ public class Prey : MonoBehaviour {
 	private float _currentSpeed;
 	private float _currentRotation;
 	private float _remainingNitroTime;
-	private bool _detect;
 	private float _minMoveTime;
 	private float _maxMoveTime;
 	private float _currentMoveTime;
 	
 	[HideInInspector]
 	public float Size;
+	public bool Detect;
 	
 	// Use this for initialization
 	void Start () {
 		_acceleration = MaxSpeed;
 		_currentSpeed = 0;
 		_remainingNitroTime = NitroTime;
-		_detect = false;
+		Detect = false;
 		_minMoveTime = 3.0f;
 		_maxMoveTime = 8.0f;
 		_currentMoveTime = 8.0f;
@@ -38,16 +38,20 @@ public class Prey : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-		//Notice();
-		//Act();
+		if(!Detect)
+			Notice();
+		Act();
 	}
 
 	void Notice() {
-		
+		FieldOfNotice fieldOfNotice = GetComponent<FieldOfNotice>();
+		if (fieldOfNotice.VisibleTargets.Count > 0) {
+			Detect = true;
+		} 
 	}
 
 	void Act() {
-		if (_detect)
+		if (Detect)
 			RunForYourLife();
 		else
 			Move();
@@ -57,7 +61,7 @@ public class Prey : MonoBehaviour {
 		Escape();
 		SetRotation();
 		SetSpeed();
-		SetPosition();
+		SetPosition(1);
 	}
 
 	void Move() {
@@ -65,7 +69,7 @@ public class Prey : MonoBehaviour {
 		RandomMove();
 		SetRotation();
 		SetSpeed();
-		SetPosition();
+		SetPosition(4);
 	}
 
 	void SetRotation() {
@@ -91,12 +95,12 @@ public class Prey : MonoBehaviour {
 		}
 	}
 
-	void SetPosition() {
+	void SetPosition(int velocityDivider) {
 		Vector3 move;
 		Vector3 position;
 		move = Vector3.right;
 		
-		position = transform.position + transform.rotation * move * _currentSpeed * Time.deltaTime;;
+		position = transform.position + transform.rotation * move * _currentSpeed * Time.deltaTime / velocityDivider;
 		position[0] = (position[0] < 110) ? 110 : position[0];
 		position[0] = (position[0] > 4980) ? 4980 : position[0];
 		position[1] = (position[1] > 790) ? 790 : position[1];
@@ -105,7 +109,9 @@ public class Prey : MonoBehaviour {
 	}
 
 	void Escape() {
-		
+		_inputTable[1] = KeyCode.N;
+		_inputTable[0] = KeyCode.W;
+		_inputTable[2] = KeyCode.N;
 	}
 	
 	void RandomMove() {
@@ -114,7 +120,7 @@ public class Prey : MonoBehaviour {
 		float tossToToss = UnityEngine.Random.Range(0.0f, 1.0f);
 		if (_currentMoveTime > _maxMoveTime)
 			toss = true;
-		else if (_currentMoveTime > _minMoveTime && tossToToss > 0.2f)
+		else if (_currentMoveTime > _minMoveTime && tossToToss > 0.01f)
 			toss = true;
 
 		if (toss) {

@@ -15,11 +15,15 @@ public class Predator : MonoBehaviour {
 	private float _currentSpeed;
 	private float _remainingNitroTime;
 	
+	[HideInInspector]
+	public float Size;
+	
 	// Use this for initialization
 	void Start () {
 		_acceleration = MaxSpeed;
 		_currentSpeed = 0;
-		_remainingNitroTime = NitroTime;
+		_remainingNitroTime = NitroTime;		
+		Size = 20.0f;
 	}
 	
 	// Update is called once per frame
