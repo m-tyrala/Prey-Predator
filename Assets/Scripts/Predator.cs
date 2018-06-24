@@ -105,7 +105,7 @@ public class Predator : MonoBehaviour {
 			_currentSpeed -= _acceleration * Time.deltaTime / ( TimeToMaxSpeed / 2 );
 			_currentSpeed = (_currentSpeed < 0) ? 0 : _currentSpeed;
 		}
-		position = transform.position + transform.rotation * move * _currentSpeed * Time.deltaTime;;
+		position = transform.position + transform.rotation * move * _currentSpeed * Time.deltaTime;
 		position[0] = (position[0] < 10) ? 10 : position[0];
 		position[0] = (position[0] > 5320) ? 5320 : position[0];
 		position[1] = (position[1] > 890) ? 890 : position[1];
