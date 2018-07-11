@@ -364,7 +364,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 3
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &488340648
 MonoBehaviour:
@@ -730,7 +730,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 6
+  m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1066487695
 GameObject:
@@ -778,15 +778,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8f9f6b432c0c93e458adf9322fd532a5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  LevelManager: {fileID: 1215276197}
+  LevelManager: {fileID: 0}
   EscapeBorderController: {fileID: 786573996}
   Predator: {fileID: 1772339413}
-  MaxSpeed: 500
+  MaxSpeed: 200
   AngleSpeed: 200
   TimeToMaxSpeed: 0.2
   NitroTime: 10
   Size: 0
   Detect: 0
+  Unnoticed: 1
 --- !u!23 &1066487698
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -871,47 +872,6 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
---- !u!1 &1215276196
-GameObject:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  serializedVersion: 5
-  m_Component:
-  - component: {fileID: 1215276198}
-  - component: {fileID: 1215276197}
-  m_Layer: 0
-  m_Name: LevelManager
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &1215276197
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 1215276196}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 21935a29d7c3bf047bf7fbd7697d5458, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  EndOfTheGame: 0
---- !u!4 &1215276198
-Transform:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 1215276196}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1448242166
 GameObject:
   m_ObjectHideFlags: 0
@@ -1002,7 +962,7 @@ RectTransform:
   - {fileID: 1066487696}
   - {fileID: 747183794}
   m_Father: {fileID: 0}
-  m_RootOrder: 1
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
@@ -1069,7 +1029,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 2
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1657550613
 GameObject:
@@ -1134,7 +1094,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 4
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1751537763
 GameObject:
@@ -1286,9 +1246,6 @@ MonoBehaviour:
   HearRadius: 100
   ViewAngle: 260
   Prey: {fileID: 1066487697}
-  UnitsLayerMask:
-    serializedVersion: 2
-    m_Bits: 256
   MeshResolution: 1
   ViewMeshFilter: {fileID: 209957661}
   VisibleTargets: []
@@ -1303,11 +1260,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 920a76e4f441e584b91268ae51ad65db, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  LevelManager: {fileID: 1215276197}
+  LevelManager: {fileID: 0}
   MaxSpeed: 500
   AngleSpeed: 200
   TimeToMaxSpeed: 0.2
   NitroTime: 10
+  TraceScore: 0
+  SpotCount: 0
+  FirstSpot: 0
   Size: 0
 --- !u!23 &1772339414
 MeshRenderer:
@@ -1947,5 +1907,5 @@ Transform:
   m_LocalScale: {x: 537.88367, y: 100.00006, z: 534.77277}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 5
+  m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 270, y: 0, z: 0}

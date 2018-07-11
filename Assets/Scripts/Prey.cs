@@ -6,7 +6,6 @@ using UnityEngine;
 
 public class Prey : MonoBehaviour {
 
-	public LevelManager LevelManager;
 	public EscapeBorderController EscapeBorderController;
 	public Predator Predator;
 	
@@ -24,12 +23,14 @@ public class Prey : MonoBehaviour {
 	private float _maxMoveTime;
 	private float _currentMoveTime;
 	
-	[HideInInspector]
-	public float Size;
-	public bool Detect;
+	[HideInInspector] public LevelManager LevelManager;
+	[HideInInspector] public float Size;
+	[HideInInspector] public bool Detect;
+	[HideInInspector] public bool Unnoticed = true;
 	
 	// Use this for initialization
-	void Start () {
+	void Awake () {
+		LevelManager = GameObject.Find("/LevelManager").GetComponent<LevelManager>();
 		_acceleration = MaxSpeed;
 		_currentSpeed = 0;
 		_remainingNitroTime = NitroTime;
@@ -51,19 +52,18 @@ public class Prey : MonoBehaviour {
 	}
 
 	private void OnTriggerEnter(Collider other) {
-		print("striggerowalo kolizje");
+		//print("striggerowalo kolizje");
 		if(!LevelManager.EndOfTheGame) {
-			print("nazwa kolizji [" + other.GetComponent<Collider>().name + "]");
+			//print("nazwa kolizji [" + other.GetComponent<Collider>().name + "]");
 			if (
-				other.GetComponent<Collider>().name == EscapeBorderController.ActiveEscapeBorders.First.Value.Name ||
-				other.GetComponent<Collider>().name == EscapeBorderController.ActiveEscapeBorders.Last.Value.Name
+				other.name == EscapeBorderController.ActiveEscapeBorders.First.Value.Name ||
+				other.name == EscapeBorderController.ActiveEscapeBorders.Last.Value.Name
 				) {
-				LevelManager.LoadLevel("Lose");
-				LevelManager.EndOfTheGame = true;
-			} else if (other.GetComponent<Collider>().name == Predator.name) {
-				LevelManager.LoadLevel("Win");
-				LevelManager.EndOfTheGame = true;
+				LevelManager.GameResult = false;
+			} else if (other.name == Predator.name) {
+				LevelManager.GameResult = true;
 			}
+			Predator.SendScore(true, LevelManager.GameResult);
 		}
 	}
 
@@ -111,6 +111,10 @@ public class Prey : MonoBehaviour {
 	void SetSpeed() {
 		if (_inputTable[0] == KeyCode.W) {
 			float additionalSpeed = 0;
+			if (_inputTable[2] == KeyCode.E && _remainingNitroTime > 0) {
+				additionalSpeed = MaxSpeed;
+				_remainingNitroTime -= Time.deltaTime;
+			}
 			_currentSpeed += _acceleration * Time.deltaTime / TimeToMaxSpeed;
 			_currentSpeed = (_currentSpeed > MaxSpeed + additionalSpeed) ? MaxSpeed + additionalSpeed : _currentSpeed;
 		} else {
@@ -133,28 +137,28 @@ public class Prey : MonoBehaviour {
 	}
 
 	void Escape() {
-		float Angle1 = Vector3.SignedAngle(
+		float AngleToFirstBorder = Vector3.SignedAngle(
 			EscapeBorderController.ActiveEscapeBorders.First.Value.BorderBlockTransform.position - transform.position,
 			new Vector3(Mathf.Sin((-transform.eulerAngles.z + 90) * Mathf.Deg2Rad),Mathf.Cos((-transform.eulerAngles.z + 90) * Mathf.Deg2Rad), 0),
 			Vector3.back
 		);
-		float Angle2 = Vector3.SignedAngle(
+		float AngleToSecondBorder = Vector3.SignedAngle(
 			EscapeBorderController.ActiveEscapeBorders.Last.Value.BorderBlockTransform.position - transform.position,
 			new Vector3(Mathf.Sin((-transform.eulerAngles.z + 90) * Mathf.Deg2Rad),Mathf.Cos((-transform.eulerAngles.z + 90) * Mathf.Deg2Rad), 0),
 			Vector3.back
 		);
 		//print("Angle 1 = [" + Angle1 + "], Angle 2 = [" + Angle2 + "]");
-		if (Angle1 < 0 && Angle2 < 0)
+		if (AngleToFirstBorder < 0 && AngleToSecondBorder < 0)
 			_inputTable[1] = KeyCode.D;
-		else if (Angle1 > 0 && Angle2 > 0)
+		else if (AngleToFirstBorder > 0 && AngleToSecondBorder > 0)
 			_inputTable[1] = KeyCode.A;
-		else if (Angle1 > 0 && Angle2 < 0)
+		else if (AngleToFirstBorder > 0 && AngleToSecondBorder < 0)
 			_inputTable[1] = KeyCode.A;
-		else if (Angle1 < 0 && Angle2 > 0)
+		else if (AngleToFirstBorder < 0 && AngleToSecondBorder > 0)
 			_inputTable[1] = KeyCode.D;
 		
 		_inputTable[0] = KeyCode.W;
-		_inputTable[2] = KeyCode.N;
+		_inputTable[2] = KeyCode.E;
 	}
 	
 	void RandomMove() {

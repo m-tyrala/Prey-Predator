@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.SocialPlatforms.Impl;
 
 public class Predator : MonoBehaviour {
 
-	public LevelManager LevelManager;
 	public float MaxSpeed;
 	public float AngleSpeed;
 	public float TimeToMaxSpeed;
@@ -14,12 +14,19 @@ public class Predator : MonoBehaviour {
 	private float _acceleration;
 	private float _currentSpeed;
 	private float _remainingNitroTime;
+	private float _traceTime = 0;
+	private bool _seePrey = false;
 	
-	[HideInInspector]
-	public float Size;
+	[HideInInspector] public LevelManager LevelManager;
+	[HideInInspector] public int TraceScore;
+	[HideInInspector] public int SpotCount;
+	[HideInInspector] public bool FirstSpot;
+
+	[HideInInspector] public float Size;
 	
 	// Use this for initialization
-	void Start () {
+	private void Awake() {
+		LevelManager = GameObject.Find("/LevelManager").GetComponent<LevelManager>();
 		_acceleration = MaxSpeed;
 		_currentSpeed = 0;
 		_remainingNitroTime = NitroTime;		
@@ -44,6 +51,7 @@ public class Predator : MonoBehaviour {
 			}
 			
 			Move(moveInput);
+			Score();
 		}
 	}
 
@@ -113,6 +121,47 @@ public class Predator : MonoBehaviour {
 		transform.position = position;
 	}
 
+	void Score() {
+		FieldOfView fieldOfView = GetComponent<FieldOfView>();
+		if (fieldOfView.VisibleTargets.Count > 0) {
+
+			Transform prey = fieldOfView.VisibleTargets[0];
+			Prey preyObject = prey.gameObject.GetComponent<Prey>();
+			if (preyObject.Unnoticed) {
+				FirstSpot = true;
+				preyObject.Unnoticed = false;
+			}
+			if (!_seePrey) {
+				SpotCount += 1;
+				_seePrey = true;
+			}
+			else {
+				_traceTime += Time.deltaTime;
+				if (_traceTime >= 1.0f) {
+					TraceScore += 1;
+					_traceTime = .0f;
+				}
+			}
+			
+		}
+		else {
+			_seePrey = false;
+		}
+	}
+
+	public void SendScore(bool gotPrey, bool win) {
+		print("send score");
+		LevelManager.PlayerScore = new LevelManager.Score(SpotCount, FirstSpot, TraceScore, gotPrey, win);
+		print("Overall: " + LevelManager.PlayerScore.Overall().ToString());
+		print("Trace: " + LevelManager.PlayerScore.Trace.ToString());
+		print("FirstSpot: " + LevelManager.PlayerScore.FirstSpot.ToString());
+		print("Spots: " + LevelManager.PlayerScore.Spots.ToString());
+		print("Catch: " + LevelManager.PlayerScore.Catch.ToString());
+		print("Result: " + LevelManager.PlayerScore.Result.ToString());
+		LevelManager.EndOfTheGame = true;
+		print("end of send score");
+	}
+	
 	void Howl() {
 		print("HOWL");
 	}

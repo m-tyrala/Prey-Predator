@@ -297,6 +297,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 21935a29d7c3bf047bf7fbd7697d5458, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  EndOfTheGame: 0
+  GameResult: 0
 --- !u!4 &926992758
 Transform:
   m_ObjectHideFlags: 0

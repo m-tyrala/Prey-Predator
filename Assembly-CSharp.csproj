@@ -52,6 +52,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Assets\Scripts\ButtonController.cs" />
     <Compile Include="Assets\Scripts\CameraController.cs" />
     <Compile Include="Assets\Scripts\EscapeBorderController.cs" />
     <Compile Include="Assets\Scripts\FieldOfNotice.cs" />
@@ -59,6 +60,7 @@
     <Compile Include="Assets\Scripts\LevelManager.cs" />
     <Compile Include="Assets\Scripts\Predator.cs" />
     <Compile Include="Assets\Scripts\Prey.cs" />
+    <Compile Include="Assets\Scripts\ScoresController.cs" />
     <None Include="Assets\Shader\StencilMask.shader" />
     <None Include="Assets\Shader\StencilObject.shader" />
     <Reference Include="UnityEngine.UI">

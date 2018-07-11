@@ -13,8 +13,6 @@ public class FieldOfView : MonoBehaviour {
 
 	public Prey Prey;
 
-	public LayerMask UnitsLayerMask;
-
 	public float MeshResolution;
 
 	public MeshFilter ViewMeshFilter;
