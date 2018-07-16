@@ -54,6 +54,7 @@
   <ItemGroup>
     <Compile Include="Assets\Scripts\ButtonController.cs" />
     <Compile Include="Assets\Scripts\CameraController.cs" />
+    <Compile Include="Assets\Scripts\DataBaseController.cs" />
     <Compile Include="Assets\Scripts\EscapeBorderController.cs" />
     <Compile Include="Assets\Scripts\FieldOfNotice.cs" />
     <Compile Include="Assets\Scripts\FieldOfView.cs" />
@@ -149,6 +150,12 @@
     </Reference>
     <Reference Include="UnityEngine.StandardEvents">
       <HintPath>C:/Users/Euzebiusz/AppData/LocalLow/Unity/cache/packages/packages.unity.com/com.unity.standardevents@1.0.10/UnityEngine.StandardEvents.dll</HintPath>
+    </Reference>
+    <Reference Include="Mono.Data.Sqlite">
+      <HintPath>D:/Users/Maciej/Documents/repos/Prey-Predator/Prey-Predator/Assets/Plugins/Mono.Data.Sqlite.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Data">
+      <HintPath>D:/Users/Maciej/Documents/repos/Prey-Predator/Prey-Predator/Assets/Plugins/System.Data.dll</HintPath>
     </Reference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

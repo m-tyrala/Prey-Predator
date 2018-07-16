@@ -140,6 +140,12 @@
     <Reference Include="UnityEngine.StandardEvents">
       <HintPath>C:/Users/Euzebiusz/AppData/LocalLow/Unity/cache/packages/packages.unity.com/com.unity.standardevents@1.0.10/UnityEngine.StandardEvents.dll</HintPath>
     </Reference>
+    <Reference Include="Mono.Data.Sqlite">
+      <HintPath>D:/Users/Maciej/Documents/repos/Prey-Predator/Prey-Predator/Assets/Plugins/Mono.Data.Sqlite.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Data">
+      <HintPath>D:/Users/Maciej/Documents/repos/Prey-Predator/Prey-Predator/Assets/Plugins/System.Data.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="Assembly-CSharp.csproj">
