@@ -778,13 +778,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8f9f6b432c0c93e458adf9322fd532a5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  LevelManager: {fileID: 0}
   EscapeBorderController: {fileID: 786573996}
   Predator: {fileID: 1772339413}
   MaxSpeed: 200
   AngleSpeed: 200
   TimeToMaxSpeed: 0.2
   NitroTime: 10
+  LevelManager: {fileID: 0}
   Size: 0
   Detect: 0
   Unnoticed: 1
@@ -1211,7 +1211,7 @@ GameObject:
   - component: {fileID: 1772339412}
   - component: {fileID: 1772339417}
   m_Layer: 0
-  m_Name: Predator
+  m_Name: Predator1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1260,11 +1260,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 920a76e4f441e584b91268ae51ad65db, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  LevelManager: {fileID: 0}
   MaxSpeed: 500
   AngleSpeed: 200
   TimeToMaxSpeed: 0.2
   NitroTime: 10
+  SeePrey: 0
+  LevelManager: {fileID: 0}
   TraceScore: 0
   SpotCount: 0
   FirstSpot: 0

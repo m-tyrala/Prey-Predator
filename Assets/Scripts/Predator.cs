@@ -11,11 +11,13 @@ public class Predator : MonoBehaviour {
 	public float AngleSpeed;
 	public float TimeToMaxSpeed;
 	public float NitroTime;
+	public bool SeePrey = false;
 	private float _acceleration;
 	private float _currentSpeed;
 	private float _remainingNitroTime;
 	private float _traceTime = 0;
-	private bool _seePrey = false;
+	private bool _howl = false;
+	private bool _purr = false;
 	
 	[HideInInspector] public LevelManager LevelManager;
 	[HideInInspector] public int TraceScore;
@@ -35,6 +37,9 @@ public class Predator : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
+		_howl = false;
+		_purr = false;
+		
 		if (Input.GetKeyDown(KeyCode.Escape)) {
 			LevelManager.LoadLevel("Menu");
 		} else {
@@ -106,7 +111,6 @@ public class Predator : MonoBehaviour {
 				additionalSpeed = MaxSpeed;
 				_remainingNitroTime -= Time.deltaTime;
 			}
-			//print(_remainingNitroTime);
 			_currentSpeed += _acceleration * Time.deltaTime / TimeToMaxSpeed;
 			_currentSpeed = (_currentSpeed > MaxSpeed + additionalSpeed) ? MaxSpeed + additionalSpeed : _currentSpeed;
 		} else {
@@ -131,9 +135,9 @@ public class Predator : MonoBehaviour {
 				FirstSpot = true;
 				preyObject.Unnoticed = false;
 			}
-			if (!_seePrey) {
+			if (!SeePrey) {
 				SpotCount += 1;
-				_seePrey = true;
+				SeePrey = true;
 			}
 			else {
 				_traceTime += Time.deltaTime;
@@ -145,28 +149,30 @@ public class Predator : MonoBehaviour {
 			
 		}
 		else {
-			_seePrey = false;
+			SeePrey = false;
 		}
 	}
 
 	public void SendScore(bool gotPrey, bool win) {
-		print("send score");
 		LevelManager.PlayerScore = new LevelManager.Score(SpotCount, FirstSpot, TraceScore, gotPrey, win);
-		print("Overall: " + LevelManager.PlayerScore.Overall().ToString());
-		print("Trace: " + LevelManager.PlayerScore.Trace.ToString());
-		print("FirstSpot: " + LevelManager.PlayerScore.FirstSpot.ToString());
-		print("Spots: " + LevelManager.PlayerScore.Spots.ToString());
-		print("Catch: " + LevelManager.PlayerScore.Catch.ToString());
-		print("Result: " + LevelManager.PlayerScore.Result.ToString());
 		LevelManager.EndOfTheGame = true;
-		print("end of send score");
 	}
 	
-	void Howl() {
+	private void Howl() {
+		_howl = true;
 		print("HOWL");
 	}
 
-	void Purr() {
+	private void Purr() {
+		_purr = true;
 		print("PURR");
+	}
+
+	public bool IsHowling() {
+		return _howl;
+	}
+
+	public bool IsPurring() {
+		return _purr;
 	}
 }

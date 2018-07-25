@@ -67,11 +67,13 @@ public class Prey : MonoBehaviour {
 		}
 	}
 
-	void Notice() {
+	public bool Notice() {
 		FieldOfNotice fieldOfNotice = GetComponent<FieldOfNotice>();
 		if (fieldOfNotice.VisibleTargets.Count > 0) {
 			Detect = true;
-		} 
+		}
+
+		return fieldOfNotice.VisibleTargets.Count > 0;
 	}
 
 	void Act() {

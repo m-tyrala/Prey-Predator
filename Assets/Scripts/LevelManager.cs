@@ -7,15 +7,14 @@ public class LevelManager : MonoBehaviour {
 	[HideInInspector] public bool GameResult;
 	[HideInInspector] public Score PlayerScore;
 	
-	private static bool created = false;
+	private static bool _created = false;
 
 	void Awake()
 	{
-		if (!created)
+		if (!_created)
 		{
 			DontDestroyOnLoad(this.gameObject);
-			created = true;
-			Debug.Log("Awake: " + gameObject);
+			_created = true;
 		}
 	}
 	
