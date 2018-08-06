@@ -4,13 +4,68 @@ using Mono.Data.Sqlite;
 using System.Data; 
 using System;
 using System.Globalization;
+using System.IO;
+using System.Runtime.InteropServices;
+using System.Threading;
+using UnityEditor;
+using UnityEditor.iOS;
+using UnityEditor.PackageManager;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using Object = UnityEngine.Object;
 
 public class DataBaseController : MonoBehaviour {
 
 	private IDbConnection _dbconn;
+	
+	private const string CreateMatchesTableQuery = 
+		"CREATE TABLE `matches` (" +
+		"`gameID` INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE," +
+		"`P1Score` INTEGER," +
+		"`P2Score` INTEGER," +
+		"`P3Score` INTEGER," +
+		"`P4Score` INTEGER," +
+		"`duration` REAL," +
+		"`spottime` TEXT," +
+		"`howlcount` INTEGER," +
+		"`purrcount` INTEGER," +
+		"`start` TEXT NOT NULL" +
+		");";
+	
+	private const string CreateMatchTableQuery = 
+		"CREATE TABLE `{0}{1}` (" +
+	    "`time`	REAL NOT NULL," +
+	    "`positionX`	REAL NOT NULL," +
+	    "`positionY`	REAL NOT NULL," +
+	    "`angleZ`	REAL NOT NULL," +
+	    "`see`	INTEGER NOT NULL DEFAULT 0," +
+	    "`howl`	INTEGER NOT NULL DEFAULT 0," +
+	    "`purr`	INTEGER NOT NULL DEFAULT 0" +
+	    ");";
+	
+	private const string InsertMatchRecordStartQuery = 
+		"INSERT INTO matches [(start)] VALUES (\"{0}\");";
+	
+	private const string InsertMatchRecordEndQuery = 
+		"INSERT INTO matches [(P1Score, P2Score, P3Score, P4Score, duration, spottime, howlcount, purrcount)] VALUES ({0}, {1}, {2}, {3}, {4}, {5}, {6}, {7});";
+	
+	private const string InsertMatchFrameRecordQuery =
+		
+		"INSERT INTO `{0}{1}` (time, positionX, positionY, angleZ, see, howl, purr) VALUES (\"{2}\", {3}, {4}, {5}, {6}, {7}, {8});";
+	
+	private const string SelectMatchIdQuery = 
+		"SELECT gameID FROM matches WHERE start=\"{0}\";";
+	
+	private const string SelectMatchesTableExistance = 
+		"SELECT name FROM sqlite_master WHERE type='table' AND name='matches';";
+	
+	private const string SelectMatchTableExistence = 
+		"SELECT name FROM sqlite_master WHERE type='table' AND name='{0}{1}';";
+	
+	private const string DatabaseConnectionDefinition = "URI=file:{0}/Database/Database.s3db";
 
+	private Hashtable _playersQueryCommands;
+	
 	[HideInInspector] public Predator Predator1;
 	[HideInInspector] public Predator Predator2;
 	[HideInInspector] public Predator Predator3;
@@ -20,6 +75,9 @@ public class DataBaseController : MonoBehaviour {
 	private int _gameId;
 	private bool _newGame = true;
 	private static bool _created = false;
+	private bool _threadRunning = false;
+	private string _dataPath;
+	private LinkedList<Thread> _threads;
 
 	void Awake()
 	{
@@ -28,39 +86,121 @@ public class DataBaseController : MonoBehaviour {
 			DontDestroyOnLoad(this.gameObject);
 			_created = true;
 		}
-	}
-	void Start () {
 
-		string conn = "URI=file:" + Application.dataPath + "/Database/Database.s3db"; //Path to database.
-		print(conn);
-		_dbconn = (IDbConnection) new SqliteConnection(conn);
-		_dbconn.Open(); //Open connection to the database.
+		_threads = new LinkedList<Thread>();
+		_dataPath = Application.dataPath;
+		_playersQueryCommands = new Hashtable();
+	}
+	void Start ()
+	{
+		_playersQueryCommands.Add("Predator1", new LinkedList<string>());
+		_playersQueryCommands.Add("Predator2", new LinkedList<string>());
+		_playersQueryCommands.Add("Predator3", new LinkedList<string>());
+		_playersQueryCommands.Add("Predator4", new LinkedList<string>());
+		_playersQueryCommands.Add("Prey", new LinkedList<string>());
 	}
 	
 	// Update is called once per frame
 	void Update () {
 		if (SceneManager.GetActiveScene().name == "Game") {
 			if (_newGame) {
+				ClearQueries();
 				RecordNewGame();
 				_newGame = false;
 			}
 			RecordFrame();
 		}
-		else {
-			_newGame = true;
+		else
+		{
+			if (!_newGame)
+			{
+				_threads.AddLast(new Thread(FillDatabase));
+				_threads.Last.Value.Start();
+
+				_newGame = true;
+			}
 		}
 	}
 
-	private void OnApplicationQuit() {
+	private void OnDisable()
+	{
+		if(_threadRunning)
+		{
+			_threadRunning = false;
+			foreach (var thread in _threads)
+			{
+				thread.Join();
+			}
+		}
+	}
+
+	private void ClearQueries()
+	{
+		_playersQueryCommands["Predator1"] = new LinkedList<string>();
+		_playersQueryCommands["Predator2"] = new LinkedList<string>();
+		_playersQueryCommands["Predator3"] = new LinkedList<string>();
+		_playersQueryCommands["Predator4"] = new LinkedList<string>();
+		_playersQueryCommands["Prey"] = new LinkedList<string>();
+	}
+	
+	public void FillDatabase()
+	{
+		_threadRunning = true;
+		
+		string conn = string.Format(DatabaseConnectionDefinition, _dataPath);
+		_dbconn = (IDbConnection) new SqliteConnection(conn);
+		_dbconn.Open();
+		
+		foreach (var command in (LinkedList<string>)_playersQueryCommands["Predator1"])
+		{
+			print(command);
+			InsertIntoTable(command);
+		}
+		foreach (var command in (LinkedList<string>)_playersQueryCommands["Predator2"])
+		{
+			print(command);
+			InsertIntoTable(command);
+		}
+		foreach (var command in (LinkedList<string>)_playersQueryCommands["Predator3"])
+		{
+			print(command);
+			InsertIntoTable(command);
+		}
+		foreach (var command in (LinkedList<string>)_playersQueryCommands["Predator4"])
+		{
+			print(command);
+			InsertIntoTable(command);
+		}
+		foreach (var command in (LinkedList<string>)_playersQueryCommands["Prey"])
+		{
+			print(command);
+			InsertIntoTable(command);
+		}
+		
 		_dbconn.Close();
+		
+		_threadRunning = false;
+	}
+	
+	public void InsertIntoTable(string command)
+	{
+		IDbCommand dbcmd = _dbconn.CreateCommand();
+		
+		dbcmd.CommandText = command;
+		dbcmd.ExecuteNonQuery();
+		dbcmd.Dispose();
+		dbcmd = null;
 	}
 
 	public void RecordNewGame() {
-		IDbCommand dbcmd = _dbconn.CreateCommand();
-		String startDate = DateTime.Now.ToString();
-		print("start date: " + startDate);
+		string conn = string.Format(DatabaseConnectionDefinition, _dataPath);
+		IDbConnection dbconn = new SqliteConnection(conn);
+		dbconn.Open();
 		
-		string sqlQuery = "SELECT name FROM sqlite_master WHERE type='table' AND name='matches';";
+		IDbCommand dbcmd = dbconn.CreateCommand();
+		String startDate = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss.fff", CultureInfo.InvariantCulture);
+		
+		string sqlQuery = SelectMatchesTableExistance;
 		dbcmd.CommandText = sqlQuery;
 		IDataReader reader = dbcmd.ExecuteReader();
 
@@ -70,20 +210,8 @@ public class DataBaseController : MonoBehaviour {
 			if (!reader.IsClosed) {
 				reader.Close();
 			}
-			sqlCmd = 
-				"CREATE TABLE `matches` (" +
-					"`gameID` INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE," +
-					"`P1Score` INTEGER," +
-					"`P2Score` INTEGER," +
-					"`P3Score` INTEGER," +
-					"`P4Score` INTEGER," +
-					"`duration` REAL," +
-					"`spottime` TEXT," +
-					"`howlcount` INTEGER," +
-					"`purrcount` INTEGER," +
-					"`catch` INTEGER," +
-					"`start` TEXT NOT NULL" +
-				");";
+
+			sqlCmd = CreateMatchesTableQuery;
 			dbcmd.CommandText = sqlCmd;
 			dbcmd.ExecuteNonQuery();
 		}
@@ -91,11 +219,11 @@ public class DataBaseController : MonoBehaviour {
 			reader.Close();
 		}
 		
-		sqlCmd = "INSERT INTO matches (start) VALUES (\"" + startDate + "\");";
+		sqlCmd = string.Format(InsertMatchRecordStartQuery, startDate);
 		dbcmd.CommandText = sqlCmd;
 		dbcmd.ExecuteNonQuery();
 		
-		sqlQuery = "SELECT gameID FROM matches WHERE start=\"" + startDate + "\";";
+		sqlQuery = string.Format(SelectMatchIdQuery, startDate);
 		dbcmd.CommandText = sqlQuery;
 		reader = dbcmd.ExecuteReader();
 		
@@ -111,89 +239,55 @@ public class DataBaseController : MonoBehaviour {
 		dbcmd = null;
 
 		_gameId = gameID;
+		dbconn.Close();
 	}
 
 	private void RecordFrame() {
-		print("record frame");
 		if (Predator1 != null) RecordPredatorFrame(Predator1.gameObject);
 		else Predator1 =  GameObject.Find("/Canvas/Predator1").GetComponent<Predator>();
-//		if (Predator2 != null) RecordPredatorFrame(Predator2.gameObject);
-//		else Predator2 =  GameObject.Find("/Canvas/Predator2").GetComponent<Predator>();
-//		if (Predator3 != null) RecordPredatorFrame(Predator3.gameObject);
-//		else Predator3 =  GameObject.Find("/Canvas/Predator3").GetComponent<Predator>();
-//		if (Predator4 != null) RecordPredatorFrame(Predator4.gameObject);
-//		else Predator4 =  GameObject.Find("/Canvas/Predator4").GetComponent<Predator>();
-//		if (Prey != null) RecordPreyFrame(Prey.gameObject);	
-//		else Prey =  GameObject.Find("/Canvas/Prey").GetComponent<Prey>();
+		try
+		{
+			if (Predator2 != null) RecordPredatorFrame(Predator2.gameObject);
+			else Predator2 = GameObject.Find("/Canvas/Predator2").GetComponent<Predator>();
+			if (Predator3 != null) RecordPredatorFrame(Predator3.gameObject);
+			else Predator3 = GameObject.Find("/Canvas/Predator3").GetComponent<Predator>();
+			if (Predator4 != null) RecordPredatorFrame(Predator4.gameObject);
+			else Predator4 = GameObject.Find("/Canvas/Predator4").GetComponent<Predator>();
+		}
+		catch (Exception ignore)
+		{
+		}
+
+		if (Prey != null) RecordPreyFrame(Prey.gameObject);	
+		else Prey =  GameObject.Find("/Canvas/Prey").GetComponent<Prey>();
 	}
 
-	private void RecordPredatorFrame(GameObject Player) {
-		IDbCommand dbcmd = _dbconn.CreateCommand();
-
-		print("1: " +  DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss.fff", CultureInfo.InvariantCulture));
-		string sqlQuery = string.Format(
-			"SELECT name FROM sqlite_master WHERE type='table' AND name='{0}{1}';",
-			_gameId,
-			Player.name
-		);
-		dbcmd.CommandText = sqlQuery;
-		IDataReader reader = dbcmd.ExecuteReader();
-
-		print("2: " +  DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss.fff", CultureInfo.InvariantCulture));
-		string sqlCmd;
+	private void RecordPredatorFrame(GameObject player) {
+		string see = player.GetComponent<Predator>().SeePrey ? "1" : "0";
+		string howl = player.GetComponent<Predator>().IsHowling() ? "1" : "0";
+		string purr = player.GetComponent<Predator>().IsPurring() ? "1" : "0";
 		
-		if (!reader.Read()) {
-			if (!reader.IsClosed) {
-				reader.Close();
-			}
-			sqlCmd = string.Format(
-				"CREATE TABLE `{0}{1}` (" +
-				"`time`	REAL NOT NULL," +
-				"`positionX`	REAL NOT NULL," +
-				"`positionY`	REAL NOT NULL," +
-				"`angleZ`	REAL NOT NULL," +
-				"`find`	INTEGER NOT NULL DEFAULT 0," +
-				"`see`	INTEGER NOT NULL DEFAULT 0," +
-				"`howl`	INTEGER NOT NULL DEFAULT 0," +
-				"`purr`	INTEGER NOT NULL DEFAULT 0" +
-				");",
-				_gameId, Player.name
-			);
-			dbcmd.CommandText = sqlCmd;
-			
-			dbcmd.ExecuteNonQuery();
-		}
-		if (!reader.IsClosed) {
-			reader.Close();
-		}
-
-		print("3: " +  DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss.fff", CultureInfo.InvariantCulture));
-		sqlCmd = string.Format(
-			"INSERT INTO `{0}{1}` (time, positionX, positionY, angleZ, see, howl, purr) VALUES (\"{2}\", {3}, {4}, {5}, {6}, {7}, {8});",
-			_gameId, Player.name,
-			DateTime.Now.ToString(), 
-			Player.transform.position.x, 
-			Player.transform.position.y, 
-			Player.transform.eulerAngles.z, 
-			Player.GetComponent<Predator>().SeePrey, 
-			Player.GetComponent<Predator>().IsHowling(),
-			Player.GetComponent<Predator>().IsPurring()
-			);
-		dbcmd.CommandText = sqlCmd;
-		dbcmd.ExecuteNonQuery();
-		
-		print("4: " + DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss.fff", CultureInfo.InvariantCulture));
-		dbcmd.Dispose();
-		dbcmd = null;
+		RecordFrame(player, see, howl, purr);
 	}
 	
-	private void RecordPreyFrame(GameObject Player) {
-		IDbCommand dbcmd = _dbconn.CreateCommand();
+	private void RecordPreyFrame(GameObject player)
+	{
+		string see = player.GetComponent<Prey>().Notice() ? "1" : "0";
+		
+		RecordFrame(player, see, "0", "0");
+	}
+	
+	private void RecordFrame(GameObject player, string see, string howl, string purr) {
+		string conn = string.Format(DatabaseConnectionDefinition, _dataPath);
+		IDbConnection dbconn = new SqliteConnection(conn);
+		dbconn.Open();
+		
+		IDbCommand dbcmd = dbconn.CreateCommand();
 
 		string sqlQuery = string.Format(
-			"SELECT name FROM sqlite_master WHERE type='table' AND name='{0}{1}';",
+			SelectMatchTableExistence,
 			_gameId,
-			Player.name
+			player.name
 		);
 		dbcmd.CommandText = sqlQuery;
 		IDataReader reader = dbcmd.ExecuteReader();
@@ -204,19 +298,7 @@ public class DataBaseController : MonoBehaviour {
 			if (!reader.IsClosed) {
 				reader.Close();
 			}
-			sqlCmd = string.Format(
-				"CREATE TABLE `{0}{1}` (" +
-				"`time`	REAL NOT NULL," +
-				"`positionX`	REAL NOT NULL," +
-				"`positionY`	REAL NOT NULL," +
-				"`angleZ`	REAL NOT NULL," +
-				"`find`	INTEGER NOT NULL DEFAULT 0," +
-				"`see`	INTEGER NOT NULL DEFAULT 0," +
-				"`howl`	INTEGER NOT NULL DEFAULT 0," +
-				"`purr`	INTEGER NOT NULL DEFAULT 0" +
-				");",
-				_gameId, Player.name
-			);
+			sqlCmd = string.Format(CreateMatchTableQuery, _gameId, player.name);
 			dbcmd.CommandText = sqlCmd;
 			dbcmd.ExecuteNonQuery();
 		}
@@ -224,21 +306,25 @@ public class DataBaseController : MonoBehaviour {
 			reader.Close();
 		}
 
-		sqlCmd = string.Format(
-			"INSERT INTO `{0}{1}` (time, positionX, positionY, angleZ, see, howl, purr) VALUES (\"{0}\", {1}, {2}, {3}, {4}, {5}, {6});",
-			_gameId, Player.name,
-			DateTime.Now.ToString(), 
-			Player.transform.position.x, 
-			Player.transform.position.y, 
-			Player.transform.eulerAngles.z, 
-			Player.GetComponent<Prey>().Notice(), 
-			"0",
-			"0"
-		);
-		dbcmd.CommandText = sqlCmd;
-		dbcmd.ExecuteNonQuery();
-		
 		dbcmd.Dispose();
 		dbcmd = null;
+		
+		dbconn.Close();
+		
+		LinkedList<string> queryList = (LinkedList<string>) _playersQueryCommands[player.name]; 
+		
+		queryList.AddLast(
+			string.Format(
+				InsertMatchFrameRecordQuery,
+				_gameId, player.name,
+				DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss.fff", CultureInfo.InvariantCulture), 
+				player.transform.position.x, 
+				player.transform.position.y, 
+				player.transform.eulerAngles.z,  
+				see, 
+				howl,
+				purr
+			)
+		);
 	}
 }

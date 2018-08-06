@@ -27,7 +27,6 @@ public class EscapeBorderController : MonoBehaviour {
 	void ShowEscape() {
 		LinkedList<Border> borders = new LinkedList<Border>();
 		foreach (Transform child in EscapeBorderLayer.transform) {
-			int i = 0;
 			borders.AddLast(
 				new Border(
 					child,
