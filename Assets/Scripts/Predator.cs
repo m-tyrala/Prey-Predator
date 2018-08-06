@@ -1,5 +1,7 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Globalization;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -134,6 +136,7 @@ public class Predator : MonoBehaviour {
 			if (preyObject.Unnoticed) {
 				FirstSpot = true;
 				preyObject.Unnoticed = false;
+				LevelManager.SpotTime = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss.fff", CultureInfo.InvariantCulture);
 			}
 			if (!SeePrey) {
 				SpotCount += 1;

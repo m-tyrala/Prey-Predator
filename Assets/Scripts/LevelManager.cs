@@ -6,6 +6,7 @@ public class LevelManager : MonoBehaviour {
 	[HideInInspector] public bool EndOfTheGame;
 	[HideInInspector] public bool GameResult;
 	[HideInInspector] public Score PlayerScore;
+	[HideInInspector] public string SpotTime;
 	
 	private static bool _created = false;
 

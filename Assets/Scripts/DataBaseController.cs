@@ -21,15 +21,22 @@ public class DataBaseController : MonoBehaviour {
 	private const string CreateMatchesTableQuery = 
 		"CREATE TABLE `matches` (" +
 		"`gameID` INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE," +
-		"`P1Score` INTEGER," +
-		"`P2Score` INTEGER," +
-		"`P3Score` INTEGER," +
-		"`P4Score` INTEGER," +
-		"`duration` REAL," +
+		"`end` TEXT," +
 		"`spottime` TEXT," +
-		"`howlcount` INTEGER," +
-		"`purrcount` INTEGER," +
-		"`start` TEXT NOT NULL" +
+		"`start` TEXT NOT NULL," +
+		"`result` INTEGER" +
+		");";
+	
+	private const string CreateMatchesResultsTableQuery = 
+		"CREATE TABLE `matchesResults` (" +
+		"`gameID` INTEGER," +
+		"`predatorName` TEXT," +
+		"`overall` INTEGER," +
+		"`trace` INTEGER," +
+		"`firstSpot` INTEGER," +
+		"`spots` INTEGER," +
+		"`catch` INTEGER," +
+		"`result` INTEGER" +
 		");";
 	
 	private const string CreateMatchTableQuery = 
@@ -44,13 +51,15 @@ public class DataBaseController : MonoBehaviour {
 	    ");";
 	
 	private const string InsertMatchRecordStartQuery = 
-		"INSERT INTO matches [(start)] VALUES (\"{0}\");";
+		"INSERT INTO matches (start) VALUES (\"{0}\");";
 	
-	private const string InsertMatchRecordEndQuery = 
-		"INSERT INTO matches [(P1Score, P2Score, P3Score, P4Score, duration, spottime, howlcount, purrcount)] VALUES ({0}, {1}, {2}, {3}, {4}, {5}, {6}, {7});";
+	private const string UpdateMatchRecordEndQuery = 
+		"UPDATE matches SET end = \"{0}\", spottime = \"{1}\", result = {2} WHERE gameID = {3};";
+	
+	private const string InsertMatchResultRecordQuery = 
+		"INSERT INTO matchesResults (gameID, predatorName, overall, trace, firstSpot, spots, catch, result) VALUES ({0}, \"{1}\", {2}, {3}, {4}, {5}, {6}, {7});";
 	
 	private const string InsertMatchFrameRecordQuery =
-		
 		"INSERT INTO `{0}{1}` (time, positionX, positionY, angleZ, see, howl, purr) VALUES (\"{2}\", {3}, {4}, {5}, {6}, {7}, {8});";
 	
 	private const string SelectMatchIdQuery = 
@@ -59,12 +68,17 @@ public class DataBaseController : MonoBehaviour {
 	private const string SelectMatchesTableExistance = 
 		"SELECT name FROM sqlite_master WHERE type='table' AND name='matches';";
 	
+	private const string SelectMatchesResultsTableExistance = 
+		"SELECT name FROM sqlite_master WHERE type='table' AND name='matchesResults';";
+	
 	private const string SelectMatchTableExistence = 
 		"SELECT name FROM sqlite_master WHERE type='table' AND name='{0}{1}';";
 	
 	private const string DatabaseConnectionDefinition = "URI=file:{0}/Database/Database.s3db";
 
 	private Hashtable _playersQueryCommands;
+
+	public LevelManager LevelManager;
 	
 	[HideInInspector] public Predator Predator1;
 	[HideInInspector] public Predator Predator2;
@@ -78,6 +92,7 @@ public class DataBaseController : MonoBehaviour {
 	private bool _threadRunning = false;
 	private string _dataPath;
 	private LinkedList<Thread> _threads;
+	private string _currentPredator;
 
 	void Awake()
 	{
@@ -90,6 +105,7 @@ public class DataBaseController : MonoBehaviour {
 		_threads = new LinkedList<Thread>();
 		_dataPath = Application.dataPath;
 		_playersQueryCommands = new Hashtable();
+		_currentPredator = "Predator1";
 	}
 	void Start ()
 	{
@@ -114,9 +130,43 @@ public class DataBaseController : MonoBehaviour {
 		{
 			if (!_newGame)
 			{
-				_threads.AddLast(new Thread(FillDatabase));
-				_threads.Last.Value.Start();
+				string conn = string.Format(DatabaseConnectionDefinition, _dataPath);
+				IDbConnection dbconn = new SqliteConnection(conn);
+				dbconn.Open();
+				
+				IDbCommand dbcmd = dbconn.CreateCommand();
 
+				string sqlCmd = string.Format(
+					UpdateMatchRecordEndQuery, 
+					DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss.fff", CultureInfo.InvariantCulture),
+					LevelManager.SpotTime,
+					LevelManager.GameResult? "1" : "0",
+					_gameId			
+				);
+				dbcmd.CommandText = sqlCmd;
+				dbcmd.ExecuteNonQuery();
+				
+				sqlCmd = string.Format(
+					InsertMatchResultRecordQuery, 
+					_gameId,
+					_currentPredator,
+					LevelManager.PlayerScore.Overall().ToString(),
+					LevelManager.PlayerScore.Trace.ToString(),
+					LevelManager.PlayerScore.FirstSpot.ToString(),
+					LevelManager.PlayerScore.Spots.ToString(),
+					LevelManager.PlayerScore.Catch.ToString(),
+					LevelManager.PlayerScore.Result.ToString()				
+					);
+				dbcmd.CommandText = sqlCmd;
+				dbcmd.ExecuteNonQuery();
+				
+				dbcmd.Dispose();
+				dbcmd = null;
+				dbconn.Close();
+				
+//				_threads.AddLast(new Thread(FillDatabase));
+//				_threads.Last.Value.Start();
+				
 				_newGame = true;
 			}
 		}
@@ -212,6 +262,23 @@ public class DataBaseController : MonoBehaviour {
 			}
 
 			sqlCmd = CreateMatchesTableQuery;
+			dbcmd.CommandText = sqlCmd;
+			dbcmd.ExecuteNonQuery();
+		}
+		if (!reader.IsClosed) {
+			reader.Close();
+		}
+		
+		sqlQuery = SelectMatchesResultsTableExistance;
+		dbcmd.CommandText = sqlQuery;
+		reader = dbcmd.ExecuteReader();
+
+		if (!reader.Read()) {
+			if (!reader.IsClosed) {
+				reader.Close();
+			}
+
+			sqlCmd = CreateMatchesResultsTableQuery;
 			dbcmd.CommandText = sqlCmd;
 			dbcmd.ExecuteNonQuery();
 		}
