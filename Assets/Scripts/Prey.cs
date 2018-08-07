@@ -132,9 +132,9 @@ public class Prey : MonoBehaviour {
 		
 		position = transform.position + transform.rotation * move * _currentSpeed * Time.deltaTime / velocityDivider;
 		position[0] = (position[0] < 10) ? 10 : position[0];
-		position[0] = (position[0] > 5320) ? 5320 : position[0];
-		position[1] = (position[1] > 890) ? 890 : position[1];
-		position[1] = (position[1] < -4450) ? -4450 : position[1];
+		position[0] = (position[0] > 5390) ? 5390 : position[0];
+		position[1] = (position[1] > 1080) ? 1080 : position[1];
+		position[1] = (position[1] < -4310) ? -4310 : position[1];
 		transform.position = position;
 	}
 

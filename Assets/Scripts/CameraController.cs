@@ -21,11 +21,11 @@ public class CameraController : MonoBehaviour {
 	Vector3 checkPosition() {
 		Vector3 playerPosition = Player.transform.position;
 		
-		float x = (playerPosition[0] < 450) ? 450 : playerPosition[0];
-		x = (x > 4900) ? 4900 : x;
+		float x = (playerPosition[0] < 875) ? 875 : playerPosition[0];
+		x = (x > 4540) ? 4540 : x;
 		
-		float y = (playerPosition[1] > 450) ? 450 : playerPosition[1];
-		y = (y < -4040) ? -4040 : y;
+		float y = (playerPosition[1] > 590) ? 590 : playerPosition[1];
+		y = (y < -3820) ? -3820 : y;
 
 		return new Vector2(x, y);
 	}

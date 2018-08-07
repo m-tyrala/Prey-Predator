@@ -20,7 +20,7 @@ public class LevelManager : MonoBehaviour {
 	}
 	
 	private void Start() {
-		Screen.SetResolution(900, 900, true);
+		Screen.SetResolution(1920, 1080, true);
 	}
 
 	private void LateUpdate() {

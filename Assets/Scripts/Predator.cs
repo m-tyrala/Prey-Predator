@@ -20,6 +20,7 @@ public class Predator : MonoBehaviour {
 	private float _traceTime = 0;
 	private bool _howl = false;
 	private bool _purr = false;
+	private Controlls _controlls;
 	
 	[HideInInspector] public LevelManager LevelManager;
 	[HideInInspector] public int TraceScore;
@@ -35,6 +36,7 @@ public class Predator : MonoBehaviour {
 		_currentSpeed = 0;
 		_remainingNitroTime = NitroTime;		
 		Size = 20.0f;
+		_controlls = new Controlls(name);
 	}
 	
 	// Update is called once per frame
@@ -49,11 +51,11 @@ public class Predator : MonoBehaviour {
 			KeyCode[] moveInput = ConstructInputTable();
 			
 			// howl
-			if (Input.GetKeyDown(KeyCode.R)) {
+			if (Input.GetKeyDown((KeyCode) _controlls.get["howl"])) {
 				Howl();
 			}
 			// purr
-			if (Input.GetKeyDown(KeyCode.F)) {
+			if (Input.GetKeyDown((KeyCode) _controlls.get["purr"])) {
 				Purr();
 			}
 			
@@ -65,24 +67,24 @@ public class Predator : MonoBehaviour {
 	KeyCode[] ConstructInputTable() {
 		KeyCode[] moveInput = new KeyCode[3];
 		// thrust
-		if (Input.GetKey(KeyCode.W)) {
+		if (Input.GetKey((KeyCode) _controlls.get["thrust"])) {
 			moveInput[0] = KeyCode.W;
 		}
 		else {
 			moveInput[0] = KeyCode.N;
 		}
 		// rotation
-		if (Input.GetKey(KeyCode.A)) {
+		if (Input.GetKey((KeyCode) _controlls.get["left"])) {
 			moveInput[1] = KeyCode.A;
 		}
-		else if (Input.GetKey(KeyCode.D)) {
+		else if (Input.GetKey((KeyCode) _controlls.get["right"])) {
 			moveInput[1] = KeyCode.D;
 		}
 		else {
 			moveInput[1] = KeyCode.N;
 		}
 		// nitro
-		if (Input.GetKey(KeyCode.E)) {
+		if (Input.GetKey((KeyCode) _controlls.get["nitro"])) {
 			moveInput[2] = KeyCode.E;
 		}
 		else {
@@ -120,10 +122,10 @@ public class Predator : MonoBehaviour {
 			_currentSpeed = (_currentSpeed < 0) ? 0 : _currentSpeed;
 		}
 		position = transform.position + transform.rotation * move * _currentSpeed * Time.deltaTime;
-		position[0] = (position[0] < 10) ? 10 : position[0];
-		position[0] = (position[0] > 5320) ? 5320 : position[0];
-		position[1] = (position[1] > 890) ? 890 : position[1];
-		position[1] = (position[1] < -4450) ? -4450 : position[1];
+		position[0] = (position[0] < 20) ? 20 : position[0];
+		position[0] = (position[0] > 5380) ? 5380 : position[0];
+		position[1] = (position[1] > 1070) ? 1070 : position[1];
+		position[1] = (position[1] < -4310) ? -4310 : position[1];
 		transform.position = position;
 	}
 
