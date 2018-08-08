@@ -92,7 +92,6 @@ public class DataBaseController : MonoBehaviour {
 	private bool _threadRunning = false;
 	private string _dataPath;
 	private LinkedList<Thread> _threads;
-	private string _currentPredator;
 
 	void Awake()
 	{
@@ -105,7 +104,6 @@ public class DataBaseController : MonoBehaviour {
 		_threads = new LinkedList<Thread>();
 		_dataPath = Application.dataPath;
 		_playersQueryCommands = new Hashtable();
-		_currentPredator = "Predator1";
 	}
 	void Start ()
 	{
@@ -149,14 +147,56 @@ public class DataBaseController : MonoBehaviour {
 				sqlCmd = string.Format(
 					InsertMatchResultRecordQuery, 
 					_gameId,
-					_currentPredator,
-					LevelManager.PlayerScore.Overall().ToString(),
-					LevelManager.PlayerScore.Trace.ToString(),
-					LevelManager.PlayerScore.FirstSpot.ToString(),
-					LevelManager.PlayerScore.Spots.ToString(),
-					LevelManager.PlayerScore.Catch.ToString(),
-					LevelManager.PlayerScore.Result.ToString()				
+					"Predator1",
+					((LevelManager.Score) LevelManager.PlayerScores["Predator1"]).Overall().ToString(),
+					((LevelManager.Score) LevelManager.PlayerScores["Predator1"]).Trace.ToString(),
+					((LevelManager.Score) LevelManager.PlayerScores["Predator1"]).FirstSpot.ToString(),
+					((LevelManager.Score) LevelManager.PlayerScores["Predator1"]).Spots.ToString(),
+					((LevelManager.Score) LevelManager.PlayerScores["Predator1"]).Catch.ToString(),
+					((LevelManager.Score) LevelManager.PlayerScores["Predator1"]).Result.ToString()				
 					);
+				dbcmd.CommandText = sqlCmd;
+				dbcmd.ExecuteNonQuery();
+				
+				sqlCmd = string.Format(
+					InsertMatchResultRecordQuery, 
+					_gameId,
+					"Predator2",
+					((LevelManager.Score) LevelManager.PlayerScores["Predator2"]).Overall().ToString(),
+					((LevelManager.Score) LevelManager.PlayerScores["Predator2"]).Trace.ToString(),
+					((LevelManager.Score) LevelManager.PlayerScores["Predator2"]).FirstSpot.ToString(),
+					((LevelManager.Score) LevelManager.PlayerScores["Predator2"]).Spots.ToString(),
+					((LevelManager.Score) LevelManager.PlayerScores["Predator2"]).Catch.ToString(),
+					((LevelManager.Score) LevelManager.PlayerScores["Predator2"]).Result.ToString()				
+				);
+				dbcmd.CommandText = sqlCmd;
+				dbcmd.ExecuteNonQuery();
+				
+				sqlCmd = string.Format(
+					InsertMatchResultRecordQuery, 
+					_gameId,
+					"Predator3",
+					((LevelManager.Score) LevelManager.PlayerScores["Predator3"]).Overall().ToString(),
+					((LevelManager.Score) LevelManager.PlayerScores["Predator3"]).Trace.ToString(),
+					((LevelManager.Score) LevelManager.PlayerScores["Predator3"]).FirstSpot.ToString(),
+					((LevelManager.Score) LevelManager.PlayerScores["Predator3"]).Spots.ToString(),
+					((LevelManager.Score) LevelManager.PlayerScores["Predator3"]).Catch.ToString(),
+					((LevelManager.Score) LevelManager.PlayerScores["Predator3"]).Result.ToString()				
+				);
+				dbcmd.CommandText = sqlCmd;
+				dbcmd.ExecuteNonQuery();
+				
+				sqlCmd = string.Format(
+					InsertMatchResultRecordQuery, 
+					_gameId,
+					"Predator4",
+					((LevelManager.Score) LevelManager.PlayerScores["Predator4"]).Overall().ToString(),
+					((LevelManager.Score) LevelManager.PlayerScores["Predator4"]).Trace.ToString(),
+					((LevelManager.Score) LevelManager.PlayerScores["Predator4"]).FirstSpot.ToString(),
+					((LevelManager.Score) LevelManager.PlayerScores["Predator4"]).Spots.ToString(),
+					((LevelManager.Score) LevelManager.PlayerScores["Predator4"]).Catch.ToString(),
+					((LevelManager.Score) LevelManager.PlayerScores["Predator4"]).Result.ToString()				
+				);
 				dbcmd.CommandText = sqlCmd;
 				dbcmd.ExecuteNonQuery();
 				
@@ -312,36 +352,30 @@ public class DataBaseController : MonoBehaviour {
 	private void RecordFrame() {
 		if (Predator1 != null) RecordPredatorFrame(Predator1.gameObject);
 		else Predator1 =  GameObject.Find("/Canvas/Predator1").GetComponent<Predator>();
-		try
-		{
-			if (Predator2 != null) RecordPredatorFrame(Predator2.gameObject);
-			else Predator2 = GameObject.Find("/Canvas/Predator2").GetComponent<Predator>();
-			if (Predator3 != null) RecordPredatorFrame(Predator3.gameObject);
-			else Predator3 = GameObject.Find("/Canvas/Predator3").GetComponent<Predator>();
-			if (Predator4 != null) RecordPredatorFrame(Predator4.gameObject);
-			else Predator4 = GameObject.Find("/Canvas/Predator4").GetComponent<Predator>();
-		}
-		catch (Exception ignore)
-		{
-		}
+		if (Predator2 != null) RecordPredatorFrame(Predator2.gameObject);
+		else Predator2 = GameObject.Find("/Canvas/Predator2").GetComponent<Predator>();
+		if (Predator3 != null) RecordPredatorFrame(Predator3.gameObject);
+		else Predator3 = GameObject.Find("/Canvas/Predator3").GetComponent<Predator>();
+		if (Predator4 != null) RecordPredatorFrame(Predator4.gameObject);
+		else Predator4 = GameObject.Find("/Canvas/Predator4").GetComponent<Predator>();
 
 		if (Prey != null) RecordPreyFrame(Prey.gameObject);	
 		else Prey =  GameObject.Find("/Canvas/Prey").GetComponent<Prey>();
 	}
 
 	private void RecordPredatorFrame(GameObject player) {
-		string see = player.GetComponent<Predator>().SeePrey ? "1" : "0";
-		string howl = player.GetComponent<Predator>().IsHowling() ? "1" : "0";
-		string purr = player.GetComponent<Predator>().IsPurring() ? "1" : "0";
+//		string see = player.GetComponent<Predator>().SeePrey ? "1" : "0";
+//		string howl = player.GetComponent<Predator>().IsHowling() ? "1" : "0";
+//		string purr = player.GetComponent<Predator>().IsPurring() ? "1" : "0";
 		
-		RecordFrame(player, see, howl, purr);
+		//RecordFrame(player, see, howl, purr);
 	}
 	
 	private void RecordPreyFrame(GameObject player)
 	{
-		string see = player.GetComponent<Prey>().Notice() ? "1" : "0";
+//		string see = player.GetComponent<Prey>().Notice() ? "1" : "0";
 		
-		RecordFrame(player, see, "0", "0");
+		//RecordFrame(player, see, "0", "0");
 	}
 	
 	private void RecordFrame(GameObject player, string see, string howl, string purr) {

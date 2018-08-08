@@ -7,7 +7,10 @@ using UnityEngine;
 public class Prey : MonoBehaviour {
 
 	public EscapeBorderController EscapeBorderController;
-	public Predator Predator;
+	public Predator Predator1;
+	public Predator Predator2;
+	public Predator Predator3;
+	public Predator Predator4;
 	
 	public float MaxSpeed;
 	public float AngleSpeed;
@@ -53,6 +56,8 @@ public class Prey : MonoBehaviour {
 
 	private void OnTriggerEnter(Collider other) {
 		//print("striggerowalo kolizje");
+		
+		Hashtable gotPrey = new Hashtable();
 		if(!LevelManager.EndOfTheGame) {
 			//print("nazwa kolizji [" + other.GetComponent<Collider>().name + "]");
 			if (
@@ -60,10 +65,21 @@ public class Prey : MonoBehaviour {
 				other.name == EscapeBorderController.ActiveEscapeBorders.Last.Value.Name
 				) {
 				LevelManager.GameResult = false;
-			} else if (other.name == Predator.name) {
+				gotPrey.Add("Predator1", false);
+				gotPrey.Add("Predator2", false);
+				gotPrey.Add("Predator3", false);
+				gotPrey.Add("Predator4", false);
+			} else if (other.name == Predator1.name || other.name == Predator2.name || other.name == Predator3.name || other.name == Predator4.name) {
 				LevelManager.GameResult = true;
+				gotPrey.Add("Predator1", (other.name == Predator1.name));
+				gotPrey.Add("Predator2", (other.name == Predator2.name));
+				gotPrey.Add("Predator3", (other.name == Predator3.name));
+				gotPrey.Add("Predator4", (other.name == Predator4.name));
 			}
-			Predator.SendScore(true, LevelManager.GameResult);
+			Predator1.SendScore((bool) gotPrey["Predator1"], LevelManager.GameResult);
+			Predator2.SendScore((bool) gotPrey["Predator2"], LevelManager.GameResult);
+			Predator3.SendScore((bool) gotPrey["Predator3"], LevelManager.GameResult);
+			Predator4.SendScore((bool) gotPrey["Predator4"], LevelManager.GameResult);
 		}
 	}
 

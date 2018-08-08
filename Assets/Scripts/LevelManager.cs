@@ -1,11 +1,12 @@
-﻿using UnityEngine;
+﻿using System.Collections;
+using UnityEngine;
 using UnityEngine.SceneManagement;
 
 public class LevelManager : MonoBehaviour {
 
 	[HideInInspector] public bool EndOfTheGame;
 	[HideInInspector] public bool GameResult;
-	[HideInInspector] public Score PlayerScore;
+	[HideInInspector] public Hashtable PlayerScores;
 	[HideInInspector] public string SpotTime;
 	
 	private static bool _created = false;
@@ -17,6 +18,8 @@ public class LevelManager : MonoBehaviour {
 			DontDestroyOnLoad(this.gameObject);
 			_created = true;
 		}
+		
+		PlayerScores = new Hashtable();
 	}
 	
 	private void Start() {

@@ -1226,7 +1226,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   EscapeBorderController: {fileID: 786573996}
-  Predator: {fileID: 1772339413}
+  Predator1: {fileID: 1772339413}
+  Predator2: {fileID: 1919518473}
+  Predator3: {fileID: 1178138412}
+  Predator4: {fileID: 1590968459}
   MaxSpeed: 200
   AngleSpeed: 200
   TimeToMaxSpeed: 0.2
@@ -1303,7 +1306,10 @@ MonoBehaviour:
   ViewRadius: 100
   HearRadius: 50
   ViewAngle: 300
-  Predator: {fileID: 1772339413}
+  Predator1: {fileID: 1772339413}
+  Predator2: {fileID: 1919518473}
+  Predator3: {fileID: 1178138412}
+  Predator4: {fileID: 1590968459}
   VisibleTargets: []
 --- !u!54 &1066487702
 Rigidbody:

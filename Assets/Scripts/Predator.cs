@@ -159,7 +159,7 @@ public class Predator : MonoBehaviour {
 	}
 
 	public void SendScore(bool gotPrey, bool win) {
-		LevelManager.PlayerScore = new LevelManager.Score(SpotCount, FirstSpot, TraceScore, gotPrey, win);
+		LevelManager.PlayerScores.Add(name, new LevelManager.Score(SpotCount, FirstSpot, TraceScore, gotPrey, win));
 		LevelManager.EndOfTheGame = true;
 	}
 	
