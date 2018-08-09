@@ -57,6 +57,7 @@
   <ItemGroup>
     <Compile Include="Assets\Scripts\ButtonController.cs" />
     <Compile Include="Assets\Scripts\CameraController.cs" />
+    <Compile Include="Assets\Scripts\CompassController.cs" />
     <Compile Include="Assets\Scripts\Controlls.cs" />
     <Compile Include="Assets\Scripts\DataBaseController.cs" />
     <Compile Include="Assets\Scripts\EscapeBorderController.cs" />

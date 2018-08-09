@@ -116,100 +116,100 @@ public class DataBaseController : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-		if (SceneManager.GetActiveScene().name == "Game") {
-			if (_newGame) {
-				ClearQueries();
-				RecordNewGame();
-				_newGame = false;
-			}
-			RecordFrame();
-		}
-		else
-		{
-			if (!_newGame)
-			{
-				string conn = string.Format(DatabaseConnectionDefinition, _dataPath);
-				IDbConnection dbconn = new SqliteConnection(conn);
-				dbconn.Open();
-				
-				IDbCommand dbcmd = dbconn.CreateCommand();
-
-				string sqlCmd = string.Format(
-					UpdateMatchRecordEndQuery, 
-					DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss.fff", CultureInfo.InvariantCulture),
-					LevelManager.SpotTime,
-					LevelManager.GameResult? "1" : "0",
-					_gameId			
-				);
-				dbcmd.CommandText = sqlCmd;
-				dbcmd.ExecuteNonQuery();
-				
-				sqlCmd = string.Format(
-					InsertMatchResultRecordQuery, 
-					_gameId,
-					"Predator1",
-					((LevelManager.Score) LevelManager.PlayerScores["Predator1"]).Overall().ToString(),
-					((LevelManager.Score) LevelManager.PlayerScores["Predator1"]).Trace.ToString(),
-					((LevelManager.Score) LevelManager.PlayerScores["Predator1"]).FirstSpot.ToString(),
-					((LevelManager.Score) LevelManager.PlayerScores["Predator1"]).Spots.ToString(),
-					((LevelManager.Score) LevelManager.PlayerScores["Predator1"]).Catch.ToString(),
-					((LevelManager.Score) LevelManager.PlayerScores["Predator1"]).Result.ToString()				
-					);
-				dbcmd.CommandText = sqlCmd;
-				dbcmd.ExecuteNonQuery();
-				
-				sqlCmd = string.Format(
-					InsertMatchResultRecordQuery, 
-					_gameId,
-					"Predator2",
-					((LevelManager.Score) LevelManager.PlayerScores["Predator2"]).Overall().ToString(),
-					((LevelManager.Score) LevelManager.PlayerScores["Predator2"]).Trace.ToString(),
-					((LevelManager.Score) LevelManager.PlayerScores["Predator2"]).FirstSpot.ToString(),
-					((LevelManager.Score) LevelManager.PlayerScores["Predator2"]).Spots.ToString(),
-					((LevelManager.Score) LevelManager.PlayerScores["Predator2"]).Catch.ToString(),
-					((LevelManager.Score) LevelManager.PlayerScores["Predator2"]).Result.ToString()				
-				);
-				dbcmd.CommandText = sqlCmd;
-				dbcmd.ExecuteNonQuery();
-				
-				sqlCmd = string.Format(
-					InsertMatchResultRecordQuery, 
-					_gameId,
-					"Predator3",
-					((LevelManager.Score) LevelManager.PlayerScores["Predator3"]).Overall().ToString(),
-					((LevelManager.Score) LevelManager.PlayerScores["Predator3"]).Trace.ToString(),
-					((LevelManager.Score) LevelManager.PlayerScores["Predator3"]).FirstSpot.ToString(),
-					((LevelManager.Score) LevelManager.PlayerScores["Predator3"]).Spots.ToString(),
-					((LevelManager.Score) LevelManager.PlayerScores["Predator3"]).Catch.ToString(),
-					((LevelManager.Score) LevelManager.PlayerScores["Predator3"]).Result.ToString()				
-				);
-				dbcmd.CommandText = sqlCmd;
-				dbcmd.ExecuteNonQuery();
-				
-				sqlCmd = string.Format(
-					InsertMatchResultRecordQuery, 
-					_gameId,
-					"Predator4",
-					((LevelManager.Score) LevelManager.PlayerScores["Predator4"]).Overall().ToString(),
-					((LevelManager.Score) LevelManager.PlayerScores["Predator4"]).Trace.ToString(),
-					((LevelManager.Score) LevelManager.PlayerScores["Predator4"]).FirstSpot.ToString(),
-					((LevelManager.Score) LevelManager.PlayerScores["Predator4"]).Spots.ToString(),
-					((LevelManager.Score) LevelManager.PlayerScores["Predator4"]).Catch.ToString(),
-					((LevelManager.Score) LevelManager.PlayerScores["Predator4"]).Result.ToString()				
-				);
-				dbcmd.CommandText = sqlCmd;
-				dbcmd.ExecuteNonQuery();
-				
-				dbcmd.Dispose();
-				dbcmd = null;
-				dbconn.Close();
-				
-//				_threads.AddLast(new Thread(FillDatabase));
-//				_threads.Last.Value.Start();
-				
-				_newGame = true;
-			}
-		}
+//		if (SceneManager.GetActiveScene().name == "Game") {
+//			if (_newGame) {
+//				ClearQueries();
+//				RecordNewGame();
+//				_newGame = false;
+//			}
+//			RecordFrame();
+//		}
+//		else
+//		{
+//			if (!_newGame)
+//			{
+//				string conn = string.Format(DatabaseConnectionDefinition, _dataPath);
+//				IDbConnection dbconn = new SqliteConnection(conn);
+//				dbconn.Open();
+//				
+//				IDbCommand dbcmd = dbconn.CreateCommand();
+//
+//				string sqlCmd = string.Format(
+//					UpdateMatchRecordEndQuery, 
+//					DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss.fff", CultureInfo.InvariantCulture),
+//					LevelManager.SpotTime,
+//					LevelManager.GameResult? "1" : "0",
+//					_gameId			
+//				);
+//				dbcmd.CommandText = sqlCmd;
+//				dbcmd.ExecuteNonQuery();
+//				
+//				sqlCmd = string.Format(
+//					InsertMatchResultRecordQuery, 
+//					_gameId,
+//					"Predator1",
+//					((LevelManager.Score) LevelManager.PlayerScores["Predator1"]).Overall().ToString(),
+//					((LevelManager.Score) LevelManager.PlayerScores["Predator1"]).Trace.ToString(),
+//					((LevelManager.Score) LevelManager.PlayerScores["Predator1"]).FirstSpot.ToString(),
+//					((LevelManager.Score) LevelManager.PlayerScores["Predator1"]).Spots.ToString(),
+//					((LevelManager.Score) LevelManager.PlayerScores["Predator1"]).Catch.ToString(),
+//					((LevelManager.Score) LevelManager.PlayerScores["Predator1"]).Result.ToString()				
+//					);
+//				dbcmd.CommandText = sqlCmd;
+//				dbcmd.ExecuteNonQuery();
+//				
+//				sqlCmd = string.Format(
+//					InsertMatchResultRecordQuery, 
+//					_gameId,
+//					"Predator2",
+//					((LevelManager.Score) LevelManager.PlayerScores["Predator2"]).Overall().ToString(),
+//					((LevelManager.Score) LevelManager.PlayerScores["Predator2"]).Trace.ToString(),
+//					((LevelManager.Score) LevelManager.PlayerScores["Predator2"]).FirstSpot.ToString(),
+//					((LevelManager.Score) LevelManager.PlayerScores["Predator2"]).Spots.ToString(),
+//					((LevelManager.Score) LevelManager.PlayerScores["Predator2"]).Catch.ToString(),
+//					((LevelManager.Score) LevelManager.PlayerScores["Predator2"]).Result.ToString()				
+//				);
+//				dbcmd.CommandText = sqlCmd;
+//				dbcmd.ExecuteNonQuery();
+//				
+//				sqlCmd = string.Format(
+//					InsertMatchResultRecordQuery, 
+//					_gameId,
+//					"Predator3",
+//					((LevelManager.Score) LevelManager.PlayerScores["Predator3"]).Overall().ToString(),
+//					((LevelManager.Score) LevelManager.PlayerScores["Predator3"]).Trace.ToString(),
+//					((LevelManager.Score) LevelManager.PlayerScores["Predator3"]).FirstSpot.ToString(),
+//					((LevelManager.Score) LevelManager.PlayerScores["Predator3"]).Spots.ToString(),
+//					((LevelManager.Score) LevelManager.PlayerScores["Predator3"]).Catch.ToString(),
+//					((LevelManager.Score) LevelManager.PlayerScores["Predator3"]).Result.ToString()				
+//				);
+//				dbcmd.CommandText = sqlCmd;
+//				dbcmd.ExecuteNonQuery();
+//				
+//				sqlCmd = string.Format(
+//					InsertMatchResultRecordQuery, 
+//					_gameId,
+//					"Predator4",
+//					((LevelManager.Score) LevelManager.PlayerScores["Predator4"]).Overall().ToString(),
+//					((LevelManager.Score) LevelManager.PlayerScores["Predator4"]).Trace.ToString(),
+//					((LevelManager.Score) LevelManager.PlayerScores["Predator4"]).FirstSpot.ToString(),
+//					((LevelManager.Score) LevelManager.PlayerScores["Predator4"]).Spots.ToString(),
+//					((LevelManager.Score) LevelManager.PlayerScores["Predator4"]).Catch.ToString(),
+//					((LevelManager.Score) LevelManager.PlayerScores["Predator4"]).Result.ToString()				
+//				);
+//				dbcmd.CommandText = sqlCmd;
+//				dbcmd.ExecuteNonQuery();
+//				
+//				dbcmd.Dispose();
+//				dbcmd = null;
+//				dbconn.Close();
+//				
+////				_threads.AddLast(new Thread(FillDatabase));
+////				_threads.Last.Value.Start();
+//				
+//				_newGame = true;
+//			}
+//		}
 	}
 
 	private void OnDisable()
