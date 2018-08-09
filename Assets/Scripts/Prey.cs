@@ -44,10 +44,18 @@ public class Prey : MonoBehaviour {
 		Detect = false;
 	}
 	
+	void Start()
+	{
+		transform.position = LevelManager.Positions[0];
+	}
+	
 	// Update is called once per frame
 	void Update () {
 		if(!Detect)
 			Notice();
+		else
+			GetComponent<SphereCollider>().enabled = true;
+			
 	}
 
 	void LateUpdate() {

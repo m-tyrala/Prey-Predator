@@ -55,7 +55,7 @@ public class FieldOfView : MonoBehaviour {
 
 	void DrawFieldOfView() {
 		SenseField viewField = CalculatSenseField(ViewAngle, ViewRadius);
-		SenseField hearField = CalculatSenseField(460.0f, HearRadius);
+		SenseField hearField = CalculatSenseField(720.0f, HearRadius);
 
 		Vector3[] vertices = viewField.Vertices.Concat(hearField.Vertices).ToArray();
 		int[] triangles = viewField.Triangles.Concat(hearField.Triangles).ToArray();

@@ -13,7 +13,13 @@ public class Predator : MonoBehaviour {
 	public float AngleSpeed;
 	public float TimeToMaxSpeed;
 	public float NitroTime;
-	public bool SeePrey = false;
+	public Predator Partner1;
+	public Predator Partner2;
+	public Predator Partner3;
+	public Prey Prey;
+	public int Number;
+	
+	
 	private float _acceleration;
 	private float _currentSpeed;
 	private float _remainingNitroTime;
@@ -22,6 +28,7 @@ public class Predator : MonoBehaviour {
 	private bool _purr = false;
 	private Controlls _controlls;
 	
+	[HideInInspector] public bool SeePrey = false;
 	[HideInInspector] public LevelManager LevelManager;
 	[HideInInspector] public int TraceScore;
 	[HideInInspector] public int SpotCount;
@@ -37,6 +44,11 @@ public class Predator : MonoBehaviour {
 		_remainingNitroTime = NitroTime;		
 		Size = 20.0f;
 		_controlls = new Controlls(name);
+	}
+
+	void Start()
+	{
+		transform.position = LevelManager.Positions[Number];
 	}
 	
 	// Update is called once per frame
@@ -165,6 +177,14 @@ public class Predator : MonoBehaviour {
 	
 	private void Howl() {
 		_howl = true;
+		Prey.Detect = true;
+		if (SeePrey)
+		{
+			Partner1.GetComponentInChildren<CompassController>().TurnCompassOn();
+			Partner2.GetComponentInChildren<CompassController>().TurnCompassOn();
+			Partner3.GetComponentInChildren<CompassController>().TurnCompassOn();
+		}
+
 		print("HOWL");
 	}
 

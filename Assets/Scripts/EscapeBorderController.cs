@@ -52,6 +52,7 @@ public class EscapeBorderController : MonoBehaviour {
 
 		foreach (var border in choosenOnes) {
 			border.BorderBlockTransform.GetComponent<MeshRenderer>().enabled = true;
+			border.BorderBlockTransform.GetComponent<BoxCollider>().enabled = true;
 		}
 
 		ActiveEscapeBorders = choosenOnes;
